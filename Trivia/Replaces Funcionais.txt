@@ -1,0 +1,129 @@
+public void ReplaceText(string textoAntigo, string parametroReferencia, bool Option)
+{
+    using (var wordDocument = WordprocessingDocument.Open(_caminhoArquivo, true))
+    {
+        var body = wordDocument.MainDocumentPart.Document.Body;
+
+        ProjectInfo projectInfo = _context.Doc.ProjectInformation;
+        var parametro = projectInfo.LookupParameter(parametroReferencia);
+        var textoNovo = parametro?.AsString();
+
+        if (string.IsNullOrEmpty(textoNovo))
+        {
+            TaskDialog.Show("Aviso", $"Parametro \"{parametroReferencia}\" não encontrado ou vazio");
+        }
+
+        // Iterar sobre todos os elementos <Text> no documento
+        foreach (var textElement in body.Descendants<Text>())
+        {
+            string searchText = textElement.Text;
+            string textLower = textElement.Text.ToLower();
+
+            // Verificar e substituir todas as ocorrências dentro do mesmo nó <Text>
+            if (textLower.Contains(textoAntigo.ToLower()))
+            {
+                if (searchText == searchText.ToUpper())
+                {
+                    textoNovo = textoNovo.ToUpper();
+                }
+                else if (searchText == searchText.ToLower())
+                {
+                    textoNovo = textoNovo.ToLower();
+                }
+                else
+                {
+                    textoNovo = Capitalizar.TitleCase(textoNovo);
+                }
+
+                textElement.Text = Regex.Replace(textElement.Text, Regex.Escape(textoAntigo),
+                textoNovo,
+                RegexOptions.IgnoreCase);
+
+                // Aplicar highlight verde ao texto substituído
+                var runElement = textElement.Parent as Run;
+                if (runElement != null)
+                {
+                    var runProperties = runElement.GetFirstChild<RunProperties>();
+                    if (runProperties == null)
+                    {
+                        runProperties = new RunProperties();
+                        runElement.PrependChild(runProperties);
+                    }
+
+                    // Adiciona o destaque verde ao <Run>
+                    runProperties.Highlight = new Highlight { Val = HighlightColorValues.Green };
+                }
+            }
+        }
+
+        // Salvar o documento após as alterações
+        wordDocument.MainDocumentPart.Document.Save();
+    }
+}
+
+/* public void ReplaceText(string textoAntigo, string parametroReferencia)
+{
+    using (var wordDocument = WordprocessingDocument.Open(_caminhoArquivo, true))
+    {
+        var body = wordDocument.MainDocumentPart.Document.Body;
+
+        ProjectInfo projectInfo = _context.Doc.ProjectInformation;
+        var parametro = projectInfo.LookupParameter(parametroReferencia);
+        var textoNovo = parametro?.AsString();
+
+        if (string.IsNullOrEmpty(textoNovo))
+        {
+            TaskDialog.Show("Aviso", $"Parametro \"{parametroReferencia}\" não encontrado ou vazio");
+            return;
+        }
+
+        // Iterar sobre todos os elementos <Run> no documento, pois um texto pode estar dividido em várias partes
+        foreach (var runElement in body.Descendants<Run>())
+        {
+            var runTextElements = runElement.Elements<Text>().ToList();
+
+            for (int i = 0; i < runTextElements.Count; i++)
+            {
+                var textElement = runTextElements[i];
+                string searchText = textElement.Text;
+                string textLower = textElement.Text.ToLower();
+
+                // Verificar se o texto contém o valor a ser substituído
+                if (textLower.Contains(textoAntigo.ToLower()))
+                {
+                    // Ajustar o formato do texto novo para corresponder ao formato do texto antigo
+                    if (searchText == searchText.ToUpper())
+                    {
+                        textoNovo = textoNovo.ToUpper();
+                    }
+                    else if (searchText == searchText.ToLower())
+                    {
+                        textoNovo = textoNovo.ToLower();
+                    }
+                    else
+                    {
+                        textoNovo = Capitalizar.TitleCase(textoNovo);
+                    }
+
+                    // Substituir o texto no nó atual
+                    textElement.Text = Regex.Replace(textElement.Text, Regex.Escape(textoAntigo),
+                        textoNovo,
+                        RegexOptions.IgnoreCase);
+
+                    // Aplicar o destaque verde ao texto substituído
+                    var runProperties = runElement.GetFirstChild<RunProperties>();
+                    if (runProperties == null)
+                    {
+                        runProperties = new RunProperties();
+                        runElement.PrependChild(runProperties);
+                    }
+
+                    runProperties.Highlight = new Highlight { Val = HighlightColorValues.Green };
+                }
+            }
+        }
+
+        // Salvar o documento após as alterações
+        wordDocument.MainDocumentPart.Document.Save();
+    }
+} */

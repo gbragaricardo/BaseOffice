@@ -1,0 +1,143 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Windows.Documents;
+using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
+using Microsoft.Win32;
+using Xceed.Document.NET;
+using Xceed.Words.NET;
+
+namespace BaseOffice
+{
+    internal class WordHandler
+    {
+        private readonly RevitContext _context;
+        private DocX _documento;
+        static string thisAssemblyPath = Assembly.GetExecutingAssembly().Location;
+        string caminhoArquivo;
+        string caminhoArquivoBase = Path.Combine(Path.GetDirectoryName(thisAssemblyPath), "mmd.docx");
+
+        public WordHandler(RevitContext context)
+        {
+            _context = context;
+        }
+
+        public void ObterCaminhoSalvar()
+        {
+            // Abrir janela "Salvar Como"
+            var saveFileDialog = new SaveFileDialog
+            {
+                Filter = "Arquivos Word (*.docx)|*.docx",
+                Title = "Salvar documento como",
+                FileName = "MMD-XXXXX-EXE-HDS-0101-REV0X.docx" // Nome sugerido
+            };
+
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                caminhoArquivo = saveFileDialog.FileName;
+            }
+            else
+            {
+                TaskDialog.Show("Aviso", "Operação Cancelada");
+            }
+        }
+
+        public void CarregarDocumento()
+        {
+            _documento = DocX.Load(caminhoArquivoBase);
+        }
+
+        public void SalvarDocumento()
+        {
+            if (_documento == null)
+            {
+                throw new InvalidOperationException("O documento não foi carregado. Use CarregarDocumento primeiro.");
+            }
+
+            _documento.SaveAs(caminhoArquivo);
+        }
+
+        public void AbrirDocumento()
+        {
+            Process.Start(new ProcessStartInfo(caminhoArquivo) { UseShellExecute = true });
+        }
+
+        public void ReplaceFixo(string textoAntigo, string parametroReferencia)
+        {
+            ProjectInfo projectInfo = _context.Doc.ProjectInformation;
+            var parametro = projectInfo.LookupParameter(parametroReferencia);
+            var valorParametro = parametro?.AsString();
+
+            if (valorParametro == null)
+            {
+                throw new ArgumentException($"Parâmetro '{parametroReferencia}' não encontrado ou vazio.");
+            }
+
+            StringReplaceTextOptions stringReplaceTextOptions = new StringReplaceTextOptions();
+            stringReplaceTextOptions.SearchValue = textoAntigo;
+            stringReplaceTextOptions.NewValue = valorParametro;
+            _documento.ReplaceText(stringReplaceTextOptions);
+
+        }
+
+        public void ReplacePorParagrafo(string textoAntigo, string parametroReferencia)
+        {
+            ProjectInfo projectInfo = _context.Doc.ProjectInformation;
+            var parametro = projectInfo.LookupParameter(parametroReferencia);
+            var valorParametro = parametro?.AsString();
+
+            if (valorParametro == null)
+            {
+                throw new ArgumentException($"Parâmetro '{parametroReferencia}' não encontrado ou vazio.");
+            }
+
+            var stringReplaceTextOptions = new StringReplaceTextOptions
+            {
+                SearchValue = textoAntigo,
+                RegExOptions = System.Text.RegularExpressions.RegexOptions.IgnoreCase
+            };
+
+            // Substituir o texto em todos os parágrafos do documento
+            foreach (var paragrafo in _documento.Paragraphs)
+            {
+                if (paragrafo.Text.ToLower().Contains(textoAntigo.ToLower()))
+                {
+                    // Usar Regex para capturar exatamente o trecho correspondente
+                    var regex = new Regex(Regex.Escape(textoAntigo), RegexOptions.IgnoreCase);
+                    var match = regex.Match(paragrafo.Text);
+
+                    if (match.Success)
+                    {
+                        // Captura o texto encontrado no parágrafo
+                        string trechoEncontrado = match.Value;
+
+                        if (trechoEncontrado == trechoEncontrado.ToUpper())
+                        {
+                            stringReplaceTextOptions.NewValue = valorParametro.ToUpper();
+                        }
+                        else if (trechoEncontrado == trechoEncontrado.ToLower())
+                        {
+                            stringReplaceTextOptions.NewValue = valorParametro.ToLower();
+                        }
+                        else
+                        {
+                            stringReplaceTextOptions.NewValue = Capitalizar.TitleCase(valorParametro);
+                        }
+
+                        paragrafo.ReplaceText(stringReplaceTextOptions);
+
+                    }
+                }
+
+            }
+        }
+
+    }
+}

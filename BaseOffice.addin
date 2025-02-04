@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<RevitAddIns>
+	<AddIn Type="Application">
+		<Name> Base Office</Name>
+		<Assembly>BaseOffice/BaseOffice.dll</Assembly>
+		<AddInId>4A76B29D-3BA0-4349-ADBE-85F44A30C5FC</AddInId>
+		<FullClassName>BaseOffice.Application</FullClassName>
+		<VendorId>Ricardo Garcia Braga</VendorId>
+		<VendorDescription>Base for addin</VendorDescription>
+	</AddIn>
+</RevitAddIns>
