@@ -30,6 +30,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="BouncyCastle.Cryptography, Version=2.0.0.0, Culture=neutral, PublicKeyToken=072edcf4a5328938, processorArchitecture=MSIL">
       <HintPath>packages\BouncyCastle.Cryptography.2.3.1\lib\net461\BouncyCastle.Cryptography.dll</HintPath>
@@ -176,13 +179,45 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>Copy "$(TargetDir)*.dll" "$(AppData)\Autodesk\Revit\Addins\2024\BaseOffice"
-  
-Copy "$(TargetDir)\Docs\*.docx*" "$(AppData)\Autodesk\Revit\Addins\2024\BaseOffice"
+    <PostBuildEvent>REM Define os caminhos corretamente
 
-if exist "$(AppData)\Autodesk\Revit\Addins\2024" copy "$(ProjectDir)\BaseOffice.addin" "$(AppData)\Autodesk\REVIT\Addins\2024"
+SET LOCAL_TARGET=$(ProjectDir)$(ProjectName)
+
+SET REVIT_ADDINS=%25AppData%25\Autodesk\Revit\Addins\2024
 
 
-if exist "$(AppData)\Autodesk\Revit\Addins\2024\BaseOffice\Resources" copy "$(ProjectDir)\Resources\*" "$(AppData)\Autodesk\Revit\Addins\2024\BaseOffice\Resources"</PostBuildEvent>
+
+REM Garante que a pasta de destino exista antes da cópia
+
+if not exist "%25LOCAL_TARGET%25" mkdir "%25LOCAL_TARGET%25"
+
+
+
+REM Garante que a pasta do Revit Addins exista antes da cópia
+if not exist "%25REVIT_ADDINS%25" mkdir "%25REVIT_ADDINS%25"
+
+
+
+REM Copia todas as DLLs geradas para a pasta dentro do projeto, sem subpastas
+
+xcopy /Y "$(TargetDir)*.dll" "%25LOCAL_TARGET%25"
+
+
+
+REM Copia a pasta BaseOffice para o diretório de Addins do Revit
+
+xcopy /Y /E /I "%25LOCAL_TARGET%25" "%25REVIT_ADDINS%25\$(ProjectName)"
+
+
+
+REM Copia o arquivo .addin para o diretório de Addins do Revit
+
+copy /Y "$(ProjectDir)$(ProjectName).addin" "%25REVIT_ADDINS%25"
+
+
+
+REM Copia o arquivo .addin para a pasta do projeto
+
+copy /Y "$(ProjectDir)$(ProjectName).addin" "%25LOCAL_TARGET%25"</PostBuildEvent>
   </PropertyGroup>
 </Project>
