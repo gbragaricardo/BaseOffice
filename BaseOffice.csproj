@@ -136,15 +136,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application.cs" />
-    <Compile Include="Commands\Capitalizar.cs" />
-    <Compile Include="Commands\Sheets.cs" />
-    <Compile Include="Commands\Template.cs" />
     <Compile Include="Commands\Dev.cs" />
+    <Compile Include="Commands\RevitCommandBase.cs" />
     <Compile Include="Commands\RevitContext.cs" />
-    <Compile Include="Commands\Memorial.cs" />
-    <Compile Include="Commands\ExcelExport.cs" />
-    <Compile Include="Commands\Word.cs" />
-    <Compile Include="Commands\WordHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup\StartApp.cs" />
     <Compile Include="WPF\UI.xaml.cs">
@@ -152,24 +146,12 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\closedButton.png" />
-    <Resource Include="Resources\dev.ico">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\word.ico">
+    <Resource Include="BaseOffice\Resources\dev.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <None Include="app.config" />
     <None Include="BaseOffice.addin" />
-    <Content Include="Docs\mmd.docx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\excel.ico">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
   </ItemGroup>
   <ItemGroup>
     <Page Include="WPF\UI.xaml">
@@ -177,6 +159,7 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>REM Define os caminhos corretamente

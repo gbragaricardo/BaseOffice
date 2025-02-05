@@ -42,35 +42,6 @@ namespace BaseOffice
 
             #endregion
 
-            #region CriarPushButton Excel
-
-            StartApp.CriarPushButton
-                (
-                "Excel",
-                "Excel",
-                "BaseOffice.Memorial",
-                panelMain,
-                "Exportação de Tabela Excel",
-                "excel.ico"
-                );
-
-            #endregion
-
-            #region CriarPushButton Word
-
-            StartApp.CriarPushButton
-                (
-                "Word",
-                "Word",
-                "BaseOffice.Word",
-                panelMain,
-                "Exportação de arquivo word",
-                "word.ico"
-                );
-
-
-            #endregion
-
             return Result.Succeeded;
         }
     }

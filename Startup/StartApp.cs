@@ -87,7 +87,7 @@ namespace BaseOffice
                 pushButton.ToolTip = dica;
 
                 // Define o caminho para o ícone do botão
-                string iconPath = Path.Combine(Path.GetDirectoryName(thisAssemblyPath), "Resources", nomeImagem);
+                string iconPath = Path.Combine(Path.GetDirectoryName(thisAssemblyPath),"BaseOffice", "Resources", nomeImagem);
 
                 // Cria a imagem do ícone
                 Uri uri = new Uri(iconPath);
