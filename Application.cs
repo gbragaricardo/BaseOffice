@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Autodesk.Revit.UI;
+using BaseOffice.Startup;
 
 namespace BaseOffice
 {
@@ -16,31 +17,17 @@ namespace BaseOffice
 
         public Result OnShutdown(UIControlledApplication application)
         {
+            EventoModificacao.Finalizar(application); // Registra o evento de modificação
             return Result.Succeeded;
         }
 
 
         public Result OnStartup(UIControlledApplication application)
         {
+            EventoModificacao.Inicializar(application); // Registra o evento de modificação
 
-            StartApp.StartupMain(application);
-
-            RibbonPanel panelMain = StartApp.CriarRibbonPanel(application, "Main");
-
-            #region CriarPushButton DEV
-
-            StartApp.CriarPushButton
-                (
-                "DEV",
-                "DEV",
-                "BaseOffice.Dev",
-                panelMain,
-                "Uso para testes",
-                "dev.ico",
-                true
-                );
-
-            #endregion
+            try {AddinAppLoader.StartupMain(application);}
+            catch{TaskDialog.Show("ProjetaHDR", "Erro ao inicializar Plugin ProjetaHDR");}
 
             return Result.Succeeded;
         }
