@@ -17,14 +17,14 @@ namespace BaseOffice
 
         public Result OnShutdown(UIControlledApplication application)
         {
-            EventoModificacao.Finalizar(application); // Registra o evento de modificação
+            //EventoModificacao.Finalizar(application); // Registra o evento de modificação
             return Result.Succeeded;
         }
 
 
         public Result OnStartup(UIControlledApplication application)
         {
-            EventoModificacao.Inicializar(application); // Registra o evento de modificação
+            //EventoModificacao.Inicializar(application); // Registra o evento de modificação
 
             try {AddinAppLoader.StartupMain(application);}
             catch{TaskDialog.Show("ProjetaHDR", "Erro ao inicializar Plugin ProjetaHDR");}
