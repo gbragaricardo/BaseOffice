@@ -13,21 +13,20 @@ namespace BaseOffice.Startup
         {
             RibbonPanel panelMain = RibbonManager.CriarRibbonPanel(application, "Main");
 
-            RibbonManager.CriarPushButton("Dev", "Dev",
-                                          "BaseOffice.Dev",
-                                          panelMain,
-                                          "Modo Desenvolvedor",
-                                          "dev.ico");
+            RibbonManager.CriarPushButton
+            ( "Dev", "Dev",
+            "BaseOffice.Dev",
+            panelMain,
+            "Modo Desenvolvedor",
+            "dev.ico");
 
 
-            //RibbonManager.CriarPushButton(
-            //    "Botao2",
-            //    "Outro Botão",
-            //    "BaseOffice.OutroComando",
-            //    painelPrincipal,
-            //    "Outro comando de exemplo",
-            //    "icon2.png"
-            //);
+            //RibbonManager.CriarPushButton
+            //("NomeInterno", "NomeExibido",
+            //"NameSpace.Classe",
+            //RibbonPanel,
+            //"Dica de uso",
+            //"imagem.ico");
         }
     }
 }
